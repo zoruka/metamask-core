@@ -348,6 +348,11 @@ export class NftController extends BaseController<NftConfig, NftState> {
         description: object.description,
         standard,
         favorite: false,
+
+        // from opensea standard https://docs.opensea.io/docs/metadata-standards#metadata-structure
+        externalLink: object.external_url,
+        animation: object.animation_url,
+        backgroundColor: object.background_color,
       };
     } catch {
       return {
@@ -425,15 +430,17 @@ export class NftController extends BaseController<NftConfig, NftState> {
         return await this.getNftInformationFromApi(contractAddress, tokenId);
       });
     }
-    return {
-      ...openSeaMetadata,
-      name: blockchainMetadata.name ?? openSeaMetadata?.name ?? null,
-      description:
-        blockchainMetadata.description ?? openSeaMetadata?.description ?? null,
-      image: blockchainMetadata.image ?? openSeaMetadata?.image ?? null,
-      standard:
-        blockchainMetadata.standard ?? openSeaMetadata?.standard ?? null,
-    };
+
+    return Object.assign(
+      {
+        name: null,
+        description: null,
+        image: null,
+        standard: null,
+      },
+      openSeaMetadata,
+      blockchainMetadata,
+    );
   }
 
   /**
